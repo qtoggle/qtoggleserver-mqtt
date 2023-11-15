@@ -4,7 +4,7 @@ import ssl
 
 from typing import Optional
 
-import asyncio_mqtt as aiomqtt
+import aiomqtt
 
 from jinja2 import Template
 
