@@ -14,7 +14,6 @@ from qtoggleserver.lib.templatenotifications import TemplateNotificationsHandler
 from qtoggleserver.utils import json as json_utils
 
 from . import logger
-from .exceptions import ClientNotConnected
 
 
 class MqttEventHandler(TemplateNotificationsHandler):
@@ -151,7 +150,8 @@ class MqttEventHandler(TemplateNotificationsHandler):
 
     async def push_template_message(self, event: core_events.Event, context: dict) -> None:
         if not self._mqtt_client:
-            raise ClientNotConnected()
+            self.warning('cannot publish message, client is not currently connected')
+            return
 
         payload = await self.render(event.get_type(), context)
         if not payload:
@@ -162,7 +162,7 @@ class MqttEventHandler(TemplateNotificationsHandler):
         topic = await self._topic_template.render_async(context)
         await self._mqtt_client.publish(topic, payload, self.qos)
 
-        self.debug('message published')
+        self.debug('message published to topic "%s"', topic)
 
     def _prepare_payload_context(self, context: dict) -> dict:
         context = dict(context)
