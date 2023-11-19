@@ -83,7 +83,9 @@ available context is limited however to `device_attrs`.
 
 ### `password`
 
-Indicates a password to supply for authentication. 
+Indicates a password to supply for authentication. The value is in fact a template that can be customized following the
+rules  described in [Template Notifications](https://github.com/qtoggle/qtoggleserver/wiki/Template-Notifications). The
+available context is limited however to `device_attrs`.
 
  * type: `string`
  * default: `null`

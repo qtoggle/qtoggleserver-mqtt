@@ -84,6 +84,8 @@ class MqttEventHandler(TemplateNotificationsHandler):
         self._client_id_template: Template = self.make_template(self.client_id)
         if self.username:
             self._username_template = self.make_template(self.username)
+        if self.password:
+            self._password_template = self.make_template(self.password)
 
         self.client_logger: logging.Logger = self.logger.getChild('client')
         if not self.client_logging:
@@ -109,12 +111,15 @@ class MqttEventHandler(TemplateNotificationsHandler):
                 username = None
                 if self._username_template:
                     username = await self._username_template.render_async(template_context)
+                password = None
+                if self._password_template:
+                    password = await self._password_template.render_async(template_context)
                 async with aiomqtt.Client(
                     hostname=self.server,
                     port=self.port,
                     tls_context=tls_context,
                     username=username,
-                    password=self.password,
+                    password=password,
                     client_id=client_id,
                     logger=self.client_logger,
                 ) as client:
