@@ -42,7 +42,11 @@ class MqttEventHandler(TemplateNotificationsHandler):
         *,
         server: str,
         port: int = DEFAULT_PORT,
-        use_tls: bool = False,
+        tls_enable: bool = False,
+        tls_verify: bool = True,
+        tls_ca: Optional[str] = None,
+        tls_cert: Optional[str] = None,
+        tls_key: Optional[str] = None,
         username: Optional[str] = None,
         password: Optional[str] = None,
         client_id: Optional[str] = None,
@@ -55,7 +59,11 @@ class MqttEventHandler(TemplateNotificationsHandler):
     ) -> None:
         self.server: str = server
         self.port: int = port
-        self.use_tls: bool = use_tls
+        self.tls_enable: bool = tls_enable
+        self.tls_verify: bool = tls_verify
+        self.tls_ca: Optional[str] = tls_ca
+        self.tls_cert: Optional[str] = tls_cert
+        self.tls_key: Optional[str] = tls_key
         self.username: Optional[str] = username
         self.password: Optional[str] = password
         self.client_id: Optional[str] = client_id
@@ -81,8 +89,13 @@ class MqttEventHandler(TemplateNotificationsHandler):
     async def _client_loop(self) -> None:
         while True:
             try:
-                if self.use_tls:
-                    tls_context = ssl.create_default_context()
+                if self.tls_enable:
+                    tls_context = ssl.create_default_context(cafile=self.tls_ca)
+                    if not self.tls_verify:
+                        tls_context.check_hostname = False
+                        tls_context.verify_mode = ssl.CERT_NONE
+                    if self.tls_cert:
+                        tls_context.load_cert_chain(self.tls_cert, self.tls_key)
                 else:
                     tls_context = None
                 client_id = self.client_id or core_device_attrs.attr_get_name()

@@ -36,10 +36,36 @@ are specified and the payload will be the template context serialized as JSON.
  * type: `integer`
  * default: `1883`
 
-### `use_tls`
+### `tls_enable`
 
  * type: `boolean`
  * default: `false`
+
+### `tls_verify`
+
+ * type: `boolean`
+ * default: `true`
+
+### `tls_ca`
+
+Full path to CA file, for self-signed certificates.
+
+ * type: `string`
+ * default: `null`
+
+### `tls_cert`
+
+Full path to client certificate file, for client authentication.
+
+ * type: `string`
+ * default: `null`
+
+### `tls_key`
+
+Full path to client certificate key file, for client authentication.
+
+ * type: `string`
+ * default: `null`
 
 ### `username`
 
