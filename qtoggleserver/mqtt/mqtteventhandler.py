@@ -21,6 +21,7 @@ class MqttEventHandler(TemplateNotificationsHandler):
     DEFAULT_PORT = 1883
     DEFAULT_RECONNECT_INTERVAL = 5  # seconds
     DEFAULT_TOPIC = '{{device_attrs.name}}'
+    DEFAULT_CLIENT_ID = '{{device_attrs.name}}'
     DEFAULT_QOS = 0
 
     DEFAULT_TEMPLATES = {
@@ -49,7 +50,7 @@ class MqttEventHandler(TemplateNotificationsHandler):
         tls_key: Optional[str] = None,
         username: Optional[str] = None,
         password: Optional[str] = None,
-        client_id: Optional[str] = None,
+        client_id: str = DEFAULT_CLIENT_ID,
         reconnect_interval: int = DEFAULT_RECONNECT_INTERVAL,
         topic: str = DEFAULT_TOPIC,
         json_context_fields: Optional[list[str]] = None,
@@ -66,7 +67,7 @@ class MqttEventHandler(TemplateNotificationsHandler):
         self.tls_key: Optional[str] = tls_key
         self.username: Optional[str] = username
         self.password: Optional[str] = password
-        self.client_id: Optional[str] = client_id
+        self.client_id: str = client_id
         self.reconnect_interval: int = reconnect_interval
         self.topic: str = topic
         self.json_context_fields: Optional[set[str]] = set(json_context_fields) if json_context_fields else None
@@ -79,6 +80,10 @@ class MqttEventHandler(TemplateNotificationsHandler):
         super().__init__(**kwargs)
 
         self._topic_template: Template = self.make_template(self.topic)
+        self._username_template: Optional[Template] = None
+        self._client_id_template: Template = self.make_template(self.client_id)
+        if self.username:
+            self._username_template = self.make_template(self.username)
 
         self.client_logger: logging.Logger = self.logger.getChild('client')
         if not self.client_logging:
@@ -98,12 +103,17 @@ class MqttEventHandler(TemplateNotificationsHandler):
                         tls_context.load_cert_chain(self.tls_cert, self.tls_key)
                 else:
                     tls_context = None
-                client_id = self.client_id or core_device_attrs.attr_get_name()
+
+                template_context = {'device_attrs': await core_device_attrs.to_json()}
+                client_id = await self._client_id_template.render_async(template_context)
+                username = None
+                if self._username_template:
+                    username = await self._username_template.render_async(template_context)
                 async with aiomqtt.Client(
                     hostname=self.server,
                     port=self.port,
                     tls_context=tls_context,
-                    username=self.username,
+                    username=username,
                     password=self.password,
                     client_id=client_id,
                     logger=self.client_logger,

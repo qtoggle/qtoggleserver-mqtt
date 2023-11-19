@@ -38,10 +38,15 @@ are specified and the payload will be the template context serialized as JSON.
 
 ### `tls_enable`
 
+Controls TLS support.
+
  * type: `boolean`
  * default: `false`
 
 ### `tls_verify`
+
+Whether to verify the server-supplied certificate. Disabling this will effectively disable server authentication,
+ensuring only data transmission encryption.
 
  * type: `boolean`
  * default: `true`
@@ -69,20 +74,28 @@ Full path to client certificate key file, for client authentication.
 
 ### `username`
 
+Indicates a username to supply for authentication. The value is in fact a template that can be customized following the
+rules  described in [Template Notifications](https://github.com/qtoggle/qtoggleserver/wiki/Template-Notifications). The
+available context is limited however to `device_attrs`.
+ 
  * type: `string`
  * default: `null`
 
 ### `password`
+
+Indicates a password to supply for authentication. 
 
  * type: `string`
  * default: `null`
 
 ### `client_id`
 
-Indicates the MQTT client id to use. 
+Indicates the MQTT client id to use. The value is in fact a template that can be customized following the rules
+described in [Template Notifications](https://github.com/qtoggle/qtoggleserver/wiki/Template-Notifications). The
+available context is limited however to `device_attrs`.
 
  * type: `string`
- * default: device name
+ * default: `{{device_attrs.name}}`
 
 ### `reconnect_interval`
 
