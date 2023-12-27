@@ -7,9 +7,7 @@ It pushes events to an MQTT broker.
 
 ## Install
 
-If you run [qToggleOS](https://github.com/qtoggle/qtoggleos), this add-on is already installed.
-
-Otherwise, install it using pip:
+Install using pip:
 
     pip install qtoggleserver-mqtt
 
