@@ -119,14 +119,13 @@ class MqttEventHandler(TemplateNotificationsHandler):
                     tls_context=tls_context,
                     username=username,
                     password=password,
-                    client_id=client_id,
+                    identifier=client_id,
                     logger=self.client_logger,
                 ) as client:
                     self._mqtt_client = client
-                    async with client.messages() as messages:
-                        async for _ in messages:
-                            # We don't really expect any message since we don't subscribe to any topic
-                            await asyncio.sleep(1)
+                    async for _ in client.messages:
+                        # We don't really expect any message since we don't subscribe to any topic
+                        await asyncio.sleep(1)
             except asyncio.CancelledError:
                 self.debug('client task cancelled')
                 self._mqtt_client = None
