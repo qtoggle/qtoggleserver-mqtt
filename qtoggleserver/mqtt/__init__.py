@@ -1,8 +1,11 @@
 import logging
 
-logger = logging.getLogger(__name__)
-
 from .mqtteventhandler import MqttEventHandler
 
 
-VERSION = 'unknown-version'
+__all__ = ["MqttEventHandler"]
+
+logger = logging.getLogger(__name__)
+
+
+VERSION = "unknown-version"
