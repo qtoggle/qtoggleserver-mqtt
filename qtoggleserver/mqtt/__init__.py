@@ -8,4 +8,4 @@ __all__ = ["MqttEventHandler"]
 logger = logging.getLogger(__name__)
 
 
-VERSION = "unknown-version"
+VERSION = "0.0.0"
