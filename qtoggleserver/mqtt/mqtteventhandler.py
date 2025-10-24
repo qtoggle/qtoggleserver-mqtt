@@ -2,8 +2,6 @@ import asyncio
 import logging
 import ssl
 
-from typing import Optional
-
 import aiomqtt
 
 from jinja2 import Template
@@ -19,20 +17,20 @@ from . import logger
 class MqttEventHandler(TemplateNotificationsHandler):
     DEFAULT_PORT = 1883
     DEFAULT_RECONNECT_INTERVAL = 5  # seconds
-    DEFAULT_TOPIC = '{{device_attrs.name}}'
-    DEFAULT_CLIENT_ID = '{{device_attrs.name}}'
+    DEFAULT_TOPIC = "{{device_attrs.name}}"
+    DEFAULT_CLIENT_ID = "{{device_attrs.name}}"
     DEFAULT_QOS = 0
 
     DEFAULT_TEMPLATES = {
-        'value-change': None,
-        'port-update': None,
-        'port-add': None,
-        'port-remove': None,
-        'device-update': None,
-        'full-update': None,
-        'slave-device-update': None,
-        'slave-device-add': None,
-        'slave-device-remove': None,
+        "value-change": None,
+        "port-update": None,
+        "port-add": None,
+        "port-remove": None,
+        "device-update": None,
+        "full-update": None,
+        "slave-device-update": None,
+        "slave-device-add": None,
+        "slave-device-remove": None,
     }
 
     logger = logger
@@ -44,15 +42,15 @@ class MqttEventHandler(TemplateNotificationsHandler):
         port: int = DEFAULT_PORT,
         tls_enable: bool = False,
         tls_verify: bool = True,
-        tls_ca: Optional[str] = None,
-        tls_cert: Optional[str] = None,
-        tls_key: Optional[str] = None,
-        username: Optional[str] = None,
-        password: Optional[str] = None,
+        tls_ca: str | None = None,
+        tls_cert: str | None = None,
+        tls_key: str | None = None,
+        username: str | None = None,
+        password: str | None = None,
         client_id: str = DEFAULT_CLIENT_ID,
         reconnect_interval: int = DEFAULT_RECONNECT_INTERVAL,
         topic: str = DEFAULT_TOPIC,
-        json_context_fields: Optional[list[str]] = None,
+        json_context_fields: list[str] | None = None,
         qos: int = DEFAULT_QOS,
         client_logging: bool = False,
         **kwargs,
@@ -61,32 +59,32 @@ class MqttEventHandler(TemplateNotificationsHandler):
         self.port: int = port
         self.tls_enable: bool = tls_enable
         self.tls_verify: bool = tls_verify
-        self.tls_ca: Optional[str] = tls_ca
-        self.tls_cert: Optional[str] = tls_cert
-        self.tls_key: Optional[str] = tls_key
-        self.username: Optional[str] = username
-        self.password: Optional[str] = password
+        self.tls_ca: str | None = tls_ca
+        self.tls_cert: str | None = tls_cert
+        self.tls_key: str | None = tls_key
+        self.username: str | None = username
+        self.password: str | None = password
         self.client_id: str = client_id
         self.reconnect_interval: int = reconnect_interval
         self.topic: str = topic
-        self.json_context_fields: Optional[set[str]] = set(json_context_fields) if json_context_fields else None
+        self.json_context_fields: set[str] | None = set(json_context_fields) if json_context_fields else None
         self.qos: int = qos
         self.client_logging: bool = client_logging
 
-        self._mqtt_client: Optional[aiomqtt.Client] = None
-        self._client_task: Optional[asyncio.Task] = None
+        self._mqtt_client: aiomqtt.Client | None = None
+        self._client_task: asyncio.Task | None = None
 
         super().__init__(**kwargs)
 
         self._topic_template: Template = self.make_template(self.topic)
-        self._username_template: Optional[Template] = None
+        self._username_template: Template | None = None
         self._client_id_template: Template = self.make_template(self.client_id)
         if self.username:
             self._username_template = self.make_template(self.username)
         if self.password:
             self._password_template = self.make_template(self.password)
 
-        self.client_logger: logging.Logger = self.logger.getChild('client')
+        self.client_logger: logging.Logger = self.logger.getChild("client")
         if not self.client_logging:
             self.client_logger.setLevel(logging.CRITICAL)
 
@@ -105,7 +103,7 @@ class MqttEventHandler(TemplateNotificationsHandler):
                 else:
                     tls_context = None
 
-                template_context = {'device_attrs': await core_device_attrs.to_json()}
+                template_context = {"device_attrs": await core_device_attrs.to_json()}
                 client_id = await self._client_id_template.render_async(template_context)
                 username = None
                 if self._username_template:
@@ -127,11 +125,11 @@ class MqttEventHandler(TemplateNotificationsHandler):
                         # We don't really expect any message since we don't subscribe to any topic
                         await asyncio.sleep(1)
             except asyncio.CancelledError:
-                self.debug('client task cancelled')
+                self.debug("client task cancelled")
                 self._mqtt_client = None
                 break
             except Exception:
-                self.error('MQTT client error; reconnecting in %s seconds', self.reconnect_interval, exc_info=True)
+                self.error("MQTT client error; reconnecting in %s seconds", self.reconnect_interval, exc_info=True)
                 self._mqtt_client = None
                 await asyncio.sleep(self.reconnect_interval)
 
@@ -149,7 +147,7 @@ class MqttEventHandler(TemplateNotificationsHandler):
 
     async def push_template_message(self, event: core_events.Event, context: dict) -> None:
         if not self._mqtt_client:
-            self.warning('cannot publish message, client is not currently connected')
+            self.warning("cannot publish message, client is not currently connected")
             return
 
         payload = await self.render(event.get_type(), context)
@@ -173,19 +171,19 @@ class MqttEventHandler(TemplateNotificationsHandler):
 
         # Remove sensitive data
         attrs_dicts: list[dict] = []
-        if 'device_attrs' in context:
-            attrs_dicts.append(context['device_attrs'])
-        for slave_attrs in context.get('slave_attrs', {}).values():
+        if "device_attrs" in context:
+            attrs_dicts.append(context["device_attrs"])
+        for slave_attrs in context.get("slave_attrs", {}).values():
             attrs_dicts.append(slave_attrs)
         for attrs_dict in attrs_dicts:
             for attr in list(attrs_dict):
-                if attr.count('password') or attr == 'wifi_key':
+                if attr.count("password") or attr == "wifi_key":
                     attrs_dict.pop(attr, None)
 
         # Remove references to objects
-        context.pop('event', None)
-        context.pop('port', None)
-        context.pop('device', None)
-        context.pop('slave', None)
+        context.pop("event", None)
+        context.pop("port", None)
+        context.pop("device", None)
+        context.pop("slave", None)
 
         return context
