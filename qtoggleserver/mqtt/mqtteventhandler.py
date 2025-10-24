@@ -5,7 +5,6 @@ import ssl
 import aiomqtt
 
 from jinja2 import Template
-
 from qtoggleserver.core import events as core_events
 from qtoggleserver.core.device import attrs as core_device_attrs
 from qtoggleserver.lib.templatenotifications import TemplateNotificationsHandler
