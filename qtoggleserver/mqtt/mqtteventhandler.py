@@ -4,11 +4,11 @@ import ssl
 
 import aiomqtt
 
-from jinja2 import Template
 from qtoggleserver.core import events as core_events
 from qtoggleserver.core.device import attrs as core_device_attrs
 from qtoggleserver.lib.templatenotifications import TemplateNotificationsHandler
 from qtoggleserver.utils import json as json_utils
+from qtoggleserver.utils import template as template_utils
 
 from . import logger
 
@@ -74,14 +74,13 @@ class MqttEventHandler(TemplateNotificationsHandler):
         self._client_task: asyncio.Task | None = None
 
         super().__init__(**kwargs)
-
-        self._topic_template: Template = self.make_template(self.topic)
-        self._username_template: Template | None = None
-        self._client_id_template: Template = self.make_template(self.client_id)
+        self._topic_template: template_utils.Template = template_utils.make(self.topic)
+        self._username_template: template_utils.Template | None = None
+        self._client_id_template: template_utils.Template = template_utils.make(self.client_id)
         if self.username:
-            self._username_template = self.make_template(self.username)
+            self._username_template = template_utils.make(self.username)
         if self.password:
-            self._password_template = self.make_template(self.password)
+            self._password_template = template_utils.make(self.password)
 
         self.client_logger: logging.Logger = self.logger.getChild("client")
         if not self.client_logging:
