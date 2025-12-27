@@ -4,6 +4,7 @@ import ssl
 
 import aiomqtt
 
+from qtoggleserver.conf import metadata
 from qtoggleserver.core import events as core_events
 from qtoggleserver.core.device import attrs as core_device_attrs
 from qtoggleserver.lib.templatenotifications import TemplateNotificationsHandler
@@ -101,7 +102,10 @@ class MqttEventHandler(TemplateNotificationsHandler):
                 else:
                     tls_context = None
 
-                template_context = {"device_attrs": await core_device_attrs.to_json()}
+                template_context = {
+                    "device_attrs": await core_device_attrs.to_json(),
+                    "metadata": metadata.get_all(),
+                }
                 client_id = await self._client_id_template.render_async(template_context)
                 username = None
                 if self._username_template:
