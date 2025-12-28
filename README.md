@@ -21,7 +21,7 @@ The message payload is constructed from a template, as indicated by
 [Template Notifications](https://github.com/qtoggle/qtoggleserver/wiki/Template-Notifications). By default, no templates
 are specified and the payload will be the template context serialized as JSON.
 
-### `driver`: `qtoggleserver.mqtt.MqttEventHandler`
+### `driver`: `qtoggleserver.mqtt.MQTTEventHandler`
 
 ### `server`
 

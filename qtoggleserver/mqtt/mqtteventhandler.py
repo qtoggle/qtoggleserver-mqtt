@@ -14,7 +14,7 @@ from qtoggleserver.utils import template as template_utils
 from . import logger
 
 
-class MqttEventHandler(TemplateNotificationsHandler):
+class MQTTEventHandler(TemplateNotificationsHandler):
     DEFAULT_PORT = 1883
     DEFAULT_RECONNECT_INTERVAL = 5  # seconds
     DEFAULT_TOPIC = "{{device_attrs.name}}"
