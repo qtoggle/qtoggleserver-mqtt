@@ -164,7 +164,7 @@ class MQTTEventHandler(TemplateNotificationsHandler):
         self.debug('message published to topic "%s"', topic)
 
     def _prepare_payload_context(self, context: dict) -> dict:
-        context = dict(context)
+        context = context.copy()
 
         if self.json_context_fields is not None:
             for name in list(context):
