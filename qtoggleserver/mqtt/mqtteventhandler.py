@@ -121,6 +121,7 @@ class MQTTEventHandler(TemplateNotificationsHandler):
                     password=password,
                     identifier=client_id,
                     logger=self.client_logger,
+                    timeout=self.reconnect_interval,
                 ) as client:
                     self._mqtt_client = client
                     async for _ in client.messages:
@@ -140,7 +141,10 @@ class MQTTEventHandler(TemplateNotificationsHandler):
 
     async def _stop_client_task(self) -> None:
         self._client_task.cancel()
-        await self._client_task
+        try:
+            await self._client_task
+        except asyncio.CancelledError:
+            pass
         self._client_task = None
 
     async def cleanup(self) -> None:
