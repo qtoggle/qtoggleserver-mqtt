@@ -7,7 +7,7 @@ import aiomqtt
 from qtoggleserver.conf import metadata
 from qtoggleserver.core import events as core_events
 from qtoggleserver.core.device import attrs as core_device_attrs
-from qtoggleserver.lib.templatenotifications import TemplateNotificationsHandler
+from qtoggleserver.lib.template_notifications import TemplateNotificationsHandler
 from qtoggleserver.utils import json as json_utils
 from qtoggleserver.utils import template as template_utils
 
