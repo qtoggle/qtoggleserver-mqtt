@@ -3,7 +3,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-from .mqtteventhandler import MQTTEventHandler  # noqa: E402
+from .mqtteventhandler import MQTTEventHandler
 
 
 __all__ = ["MQTTEventHandler"]

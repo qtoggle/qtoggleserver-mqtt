@@ -179,8 +179,7 @@ class MQTTEventHandler(TemplateNotificationsHandler):
         attrs_dicts: list[dict] = []
         if "device_attrs" in context:
             attrs_dicts.append(context["device_attrs"])
-        for slave_attrs in context.get("slave_attrs", {}).values():
-            attrs_dicts.append(slave_attrs)
+        attrs_dicts.extend(context.get("slave_attrs", {}).values())
         for attrs_dict in attrs_dicts:
             for attr in list(attrs_dict):
                 if attr.count("password") or attr == "wifi_key":
