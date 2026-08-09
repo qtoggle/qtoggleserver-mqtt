@@ -160,7 +160,7 @@ class MQTTEventHandler(TemplateNotificationsHandler):
         if not payload:
             # If no template is specified, dump the context as JSON
             payload_context = self._prepare_payload_context(context)
-            payload = json_utils.dumps(payload_context, extra_types=json_utils.EXTRA_TYPES_ISO)
+            payload = json_utils.dumps(payload_context, extra_types=json_utils.ExtraTypes.ISO)
 
         topic = await self._topic_template.render_async(context)
         await self._mqtt_client.publish(topic, payload, self.qos)
