@@ -77,6 +77,7 @@ class MQTTEventHandler(TemplateNotificationsHandler):
         super().__init__(**kwargs)
         self._topic_template: template_utils.Template = template_utils.make(self.topic)
         self._username_template: template_utils.Template | None = None
+        self._password_template: template_utils.Template | None = None
         self._client_id_template: template_utils.Template = template_utils.make(self.client_id)
         if self.username:
             self._username_template = template_utils.make(self.username)
