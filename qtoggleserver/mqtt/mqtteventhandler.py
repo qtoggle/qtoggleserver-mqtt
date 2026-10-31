@@ -175,16 +175,6 @@ class MQTTEventHandler(TemplateNotificationsHandler):
                 if name not in self.json_context_fields:
                     context.pop(name)
 
-        # Remove sensitive data
-        attrs_dicts: list[dict] = []
-        if "device_attrs" in context:
-            attrs_dicts.append(context["device_attrs"])
-        attrs_dicts.extend(context.get("slave_attrs", {}).values())
-        for attrs_dict in attrs_dicts:
-            for attr in list(attrs_dict):
-                if attr.count("password") or attr == "wifi_key":
-                    attrs_dict.pop(attr, None)
-
         # Remove references to objects
         context.pop("event", None)
         context.pop("port", None)
